@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌿 小資暖心記帳</title>
+    <style>
+        :root {
+            /* 溫馨生活感配色 (Warm Earthy Tones) */
+            --bg-color: #F7F5F2;       /* 米白背景 */
+            --card-bg: #FFFFFF;        /* 卡片白 */
+            --primary: #D4A373;        /* 拿鐵色 (主色) */
+            --primary-dark: #b08155;   
+            --accent-green: #8DA399;   /* 鼠尾草綠 (收入/確認) */
+            --accent-red: #E07A5F;     /* 陶土紅 (支出/刪除) */
+            --text-main: #4A4A4A;      /* 深灰字體 (不全黑) */
+            --text-light: #8D8D8D;     /* 淺灰字體 */
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: -apple-system, "微軟正黑體", "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* 防止整個頁面捲動 */
+        }
+
+        /* --- 頂部導航 --- */
+        header {
+            padding: 15px 20px;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .author-link {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 6px 12px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        .author-link:active { transform: scale(0.95); }
+
+        /* --- 主內容區 (可捲動) --- */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 80px 20px; /* 底部留白給按鈕 */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 資產卡片 */
+        .dashboard-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #E6B89C 100%);
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 裝飾圓圈 */
+        .dashboard-card::after {
+            content: "";
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 100px; height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+
+        .balance-label { font-size: 0.9rem; opacity: 0.9; }
+        .balance-amount { font-size: 2.2rem; font-weight: bold; margin: 5px 0 15px 0; }
+        .stats-row { display: flex; gap: 20px; }
+        .stat-item span { font-size: 0.8rem; opacity: 0.8; display: block; }
+        .stat-item strong { font-size: 1.1rem; }
+
+        /* 清單標題區 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .section-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); }
+        .btn-text { background:none; border:none; color:var(--primary); font-size:0.9rem; cursor:pointer;}
+
+        /* 交易列表 */
+        .tx-list { list-style: none; padding: 0; margin: 0; }
+        .tx-item {
+            background: var(--card-bg);
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .tx-left { display: flex; flex-direction: column; gap: 4px; }
+        .tx-cat { font-weight: bold; font-size: 1rem; }
+        .tx-date { font-size: 0.8rem; color: var(--text-light); }
+        .tx-amount { font-weight: bold; font-size: 1.1rem; }
+        .tx-amount.income { color: var(--accent-green); }
+        .tx-amount.expense { color: var(--accent-red); }
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-light);
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+
+        /* --- 懸浮按鈕 (FAB) --- */
+        .fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: var(--text-main);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.2s;
+        }
+        .fab:active { transform: scale(0.9); }
+
+        /* --- 彈出視窗 (Modal) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: flex-end; /* 手機版從底部滑出 */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+
+        .modal-card {
+            background: #fff;
+            width: 100%;
+            max-width: 500px; /* 電腦版限制寬度 */
+            border-radius: 20px 20px 0 0;
+            padding: 25px;
+            box-sizing: border-box;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+
+        /* 輸入表單樣式 */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; }
+        
+        /* 類型切換按鈕 */
+        .type-toggle {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 12px;
+            padding: 4px;
+        }
+        .type-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-weight: bold;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .type-btn.active[data-val="expense"] { background: #fff; color: var(--accent-red); shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .type-btn.active[data-val="income"] { background: #fff; color: var(--accent-green); shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            background: #FAFAFA;
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: var(--primary); background: #fff; }
+
+        .btn-block {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-save { background: var(--text-main); color: white; }
+        .btn-close { background: #f0f0f0; color: #666; margin-top: 10px; }
+
+        /* 報表表格 */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 5px; text-align: right; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem;}
+        th { color: var(--text-light); font-weight: normal; text-align: center; }
+        td:first-child { text-align: center; color: var(--text-main); font-weight: bold; }
+
+        /* 備份區塊 */
+        .backup-area {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        .btn-small {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">🌱 小資日記</div>
+    <!-- 導流連結 -->
+    <a href="https://vocus.cc/user/@WUCJ" target="_blank" class="author-link">
+        🏠 關於作者
+    </a>
+</header>
+
+<main>
+    <!-- 儀表板 -->
+    <div class="dashboard-card">
+        <div class="balance-label">本月結餘 (Balance)</div>
+        <div class="balance-amount" id="displayBalance">$0</div>
+        <div class="stats-row">
+            <div class="stat-item">
+                <span>總收入</span>
+                <strong id="displayIncome">$0</strong>
+            </div>
+            <div class="stat-item">
+                <span>總支出</span>
+                <strong id="displayExpense">$0</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 列表標題 -->
+    <div class="section-header">
+        <div class="section-title">📝 近期紀錄</div>
+        <button class="btn-text" onclick="showReport()">📊 查看年度報表</button>
+    </div>
+
+    <!-- 交易列表 -->
+    <ul class="tx-list" id="txList">
+        <!-- JS 動態插入 -->
+        <li class="empty-state">尚未有紀錄，點擊右下角 ＋ 新增</li>
+    </ul>
+
+    <!-- 底部版權/備份提示 -->
+    <div style="text-align: center; margin-top: 30px; color: #ccc; font-size: 0.8rem;">
+        資料儲存於本機，隱私安全無虞
+    </div>
+</main>
+
+<!-- 懸浮按鈕 (FAB) -->
+<div class="fab" onclick="openInputModal()">＋</div>
+
+<!-- 1. 記帳輸入彈窗 -->
+<div class="modal-overlay" id="inputModal">
+    <div class="modal-card">
+        <h3 style="margin:0 0 20px 0; text-align:center;">✏️ 新增一筆</h3>
+        
+        <div class="form-group">
+            <div class="type-toggle">
+                <button class="type-btn" data-val="expense" onclick="setType('expense')">支出</button>
+                <button class="type-btn" data-val="income" onclick="setType('income')">收入</button>
+            </div>
+            <input type="hidden" id="txType" value="expense">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">日期</label>
+            <input type="date" id="txDate">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">金額</label>
+            <input type="number" id="txAmount" placeholder="0" inputmode="numeric" style="font-size:1.5rem; color:var(--text-main);">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">分類</label>
+            <select id="txCategory"></select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">備註 (選填)</label>
+            <input type="text" id="txNote" placeholder="例如：午餐、聚會...">
+        </div>
+
+        <button class="btn-block btn-save" onclick="saveTransaction()">確認儲存</button>
+        <button class="btn-block btn-close" onclick="closeModal('inputModal')">取消</button>
+    </div>
+</div>
+
+<!-- 2. 年度報表彈窗 -->
+<div class="modal-overlay" id="reportModal">
+    <div class="modal-card">
+        <h3 style="margin:0 0 10px 0; text-align:center;">📅 年度收支表</h3>
+        <div style="overflow-x: auto;">
+            <table id="reportTable">
+                <thead>
+                    <tr><th>月份</th><th>收入</th><th>支出</th><th>結餘</th></tr>
+                </thead>
+                <tbody id="reportBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="backup-area">
+            <p style="font-size:0.8rem; margin-bottom:10px;">💾 資料管理 (備份/還原)</p>
+            <button class="btn-small" onclick="exportData()">匯出備份</button>
+            <button class="btn-small" onclick="document.getElementById('importFile').click()">匯入資料</button>
+            <button class="btn-small" style="color:var(--accent-red)" onclick="clearData()">清空</button>
+            <input type="file" id="importFile" style="display:none" onchange="importData(this)">
+        </div>
+
+        <button class="btn-block btn-close" onclick="closeModal('reportModal')">關閉</button>
+    </div>
+</div>
+
+<script>
+    // === 1. 初始化資料與設定 ===
+    let transactions = JSON.parse(localStorage.getItem('cozyFinanceData')) || [];
+
+    const categories = {
+        expense: ['🍱 餐飲伙食', '🚗 交通通勤', '🏠 居家房租', '🛍️ 購物消費', '🎬 娛樂交際', '💊 醫療保健', '📚 學習進修', '📦 其他支出'],
+        income: ['💼 薪資收入', '🧧 獎金紅包', '📈 投資理財', '🤝 兼職外快', '💵 其他收入']
+    };
+
+    window.onload = function() {
+        document.getElementById('txDate').valueAsDate = new Date();
+        setType('expense'); // 預設支出
+        refreshUI();
+    };
+
+    // === 2. UI 操作邏輯 ===
+
+    function openInputModal() {
+        // 重置金額與備註，保留日期與分類
+        document.getElementById('txAmount').value = '';
+        document.getElementById('txNote').value = '';
+        document.getElementById('inputModal').classList.add('active');
+        document.getElementById('txAmount').focus(); // 自動聚焦金額
+    }
+
+    function showReport() {
+        generateReport();
+        document.getElementById('reportModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // 點擊遮罩關閉
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('active');
+        });
+    });
+
+    // 切換收支類型
+    function setType(type) {
+        document.getElementById('txType').value = type;
+        
+        // 更新按鈕樣式
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.dataset.val === type) btn.classList.add('active');
+        });
+
+        // 更新分類選單
+        const select = document.getElementById('txCategory');
+        select.innerHTML = '';
+        categories[type].forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            select.appendChild(opt);
+        });
+    }
+
+    // === 3. 核心記帳功能 ===
+
+    function saveTransaction() {
+        const date = document.getElementById('txDate').value;
+        const type = document.getElementById('txType').value;
+        const category = document.getElementById('txCategory').value;
+        const amount = parseFloat(document.getElementById('txAmount').value);
+        const note = document.getElementById('txNote').value.trim();
+
+        if (!date || isNaN(amount) || amount <= 0) {
+            alert("⚠️ 請輸入正確的金額與日期");
+            return;
+        }
+
+        const newTx = {
+            id: Date.now(),
+            date, type, category, amount, note
+        };
+
+        transactions.push(newTx);
+        transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); // 日期排序
+        
+        saveToLocal();
+        refreshUI();
+        closeModal('inputModal');
+    }
+
+    function deleteTx(id) {
+        if(confirm("確定要刪除這筆紀錄嗎？")) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveToLocal();
+            refreshUI();
+        }
+    }
+
+    function saveToLocal() {
+        localStorage.setItem('cozyFinanceData', JSON.stringify(transactions));
+    }
+
+    // === 4. 畫面渲染 ===
+
+    function refreshUI() {
+        // 1. 計算本月結餘
+        const nowStr = new Date().toISOString().slice(0, 7); // yyyy-mm
+        let inc = 0, exp = 0;
+        
+        transactions.forEach(t => {
+            if (t.date.startsWith(nowStr)) {
+                if (t.type === 'income') inc += t.amount;
+                else exp += t.amount;
+            }
+        });
+
+        document.getElementById('displayIncome').innerText = `$${inc.toLocaleString()}`;
+        document.getElementById('displayExpense').innerText = `$${exp.toLocaleString()}`;
+        document.getElementById('displayBalance').innerText = `$${(inc - exp).toLocaleString()}`;
+
+        // 2. 渲染近期列表 (取前 20 筆)
+        const list = document.getElementById('txList');
+        list.innerHTML = '';
+        
+        if (transactions.length === 0) {
+            list.innerHTML = '<li class="empty-state">還沒有記帳紀錄，點擊右下角 + 開始吧！</li>';
+            return;
+        }
+
+        transactions.slice(0, 20).forEach(t => {
+            const isInc = t.type === 'income';
+            const li = document.createElement('li');
+            li.className = 'tx-item';
+            // 點擊項目長按或點擊可刪除 (這裡簡單做成點擊刪除按鈕)
+            li.innerHTML = `
+                <div class="tx-left" onclick="alert('${t.note || "無備註"}')">
+                    <div class="tx-cat">${t.category}</div>
+                    <div class="tx-date">${t.date} ${t.note ? '• 📝' : ''}</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="tx-amount ${isInc ? 'income' : 'expense'}">
+                        ${isInc?'+':'-'}${t.amount.toLocaleString()}
+                    </div>
+                    <button style="border:none; background:none; color:#ccc; font-size:1.2rem;" onclick="deleteTx(${t.id})">×</button>
+                </div>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    // === 5. 報表與資料備份 ===
+
+    function generateReport() {
+        const tbody = document.getElementById('reportBody');
+        tbody.innerHTML = '';
+        const stats = {};
+        
+        // 初始化近 12 個月
+        const d = new Date();
+        d.setDate(1);
+        const months = [];
+        for(let i=0; i<12; i++) {
+            const m = d.toISOString().slice(0, 7);
+            stats[m] = { inc: 0, exp: 0 };
+            months.push(m);
+            d.setMonth(d.getMonth() - 1);
+        }
+
+        transactions.forEach(t => {
+            const m = t.date.slice(0, 7);
+            if (stats[m]) {
+                if (t.type === 'income') stats[m].inc += t.amount;
+                else stats[m].exp += t.amount;
+            }
+        });
+
+        months.forEach(m => {
+            const data = stats[m];
+            const net = data.inc - data.exp;
+            if (data.inc === 0 && data.exp === 0) return; // 沒資料的月份不顯示，讓版面乾淨點
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${m}</td>
+                    <td style="color:var(--accent-green)">${data.inc > 0 ? data.inc.toLocaleString() : '-'}</td>
+                    <td style="color:var(--accent-red)">${data.exp > 0 ? data.exp.toLocaleString() : '-'}</td>
+                    <td style="font-weight:bold; color:${net>=0?'var(--text-main)':'var(--accent-red)'}">${net.toLocaleString()}</td>
+                </tr>
+            `;
+        });
+        
+        if(tbody.innerHTML === '') {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">尚無年度資料</td></tr>';
+        }
+    }
+
+    function exportData() {
+        const dataStr = JSON.stringify(transactions);
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `小資暖心記帳備份_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+    }
+
+    function importData(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(Array.isArray(data)) {
+                    if(confirm("確定要匯入嗎？這將覆蓋現有資料。")) {
+                        transactions = data;
+                        saveToLocal();
+                        refreshUI();
+                        alert("匯入成功！");
+                        closeModal('reportModal');
+                    }
+                }
+            } catch(err) { alert("檔案格式錯誤"); }
+        };
+        reader.readAsText(file);
+        input.value = '';
+    }
+
+    function clearData() {
+        if(confirm("😱 確定要清空所有資料嗎？此動作無法復原！")) {
+            transactions = [];
+            saveToLocal();
+            refreshUI();
+            closeModal('reportModal');
+        }
+    }
+</script>
+
+</body>
+</html>
