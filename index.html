@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>🌿 小資日記</title>
+    <title>🌿 小資日記 Pro</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
     
     <style>
         :root {
-            /* 溫馨生活感配色 */
-            --bg-color: #F7F5F2;       /* 米白背景 */
-            --card-bg: #FFFFFF;        /* 卡片白 */
-            --primary: #D4A373;        /* 拿鐵色 */
-            --primary-dark: #b08155;   
-            --accent-green: #8DA399;   /* 鼠尾草綠 */
-            --accent-red: #E07A5F;     /* 陶土紅 */
-            --text-main: #4A4A4A;      /* 深灰 */
-            --text-light: #8D8D8D;     /* 淺灰 */
+            --bg-color: #F7F5F2;
+            --card-bg: #FFFFFF;
+            --primary: #D4A373;
+            --primary-dark: #b08155;
+            --accent-green: #8DA399;
+            --accent-red: #E07A5F;
+            --accent-warn: #E9C46A;
+            --text-main: #4A4A4A;
+            --text-light: #8D8D8D;
             --radius: 16px;
         }
 
@@ -33,7 +33,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- 頂部導航 --- */
+        /* --- Header --- */
         header {
             padding: 12px 20px;
             background: var(--bg-color);
@@ -41,45 +41,52 @@
             z-index: 10;
         }
 
-        .brand {
-            font-size: 1.3rem; font-weight: bold; color: var(--primary-dark);
-            display: flex; align-items: center; gap: 5px;
-        }
+        .brand { font-size: 1.3rem; font-weight: bold; color: var(--primary-dark); }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
 
-        .header-actions { display: flex; gap: 10px; align-items: center; }
-
-        /* 說明按鈕 (小圖示) */
         .btn-icon-link {
             text-decoration: none; display: flex; align-items: center; justify-content: center;
             width: 36px; height: 36px; background: #fff; border-radius: 50%;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid #eee;
-            font-size: 1.1rem; transition: 0.2s; cursor: pointer;
+            font-size: 1.1rem; cursor: pointer; transition: 0.2s;
         }
+        .btn-icon-link:active { transform: scale(0.95); }
         
-        /* 🔥 顯眼的作者按鈕 (拿鐵色背景) 🔥 */
         .btn-author-highlight {
-            text-decoration: none;
-            display: flex; align-items: center; gap: 5px;
-            padding: 8px 16px;
-            background: var(--primary); /* 使用主色調 */
-            color: white;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 3px 8px rgba(212, 163, 115, 0.4);
-            transition: transform 0.2s;
-            border: none;
+            text-decoration: none; display: flex; align-items: center; gap: 5px;
+            padding: 8px 16px; background: var(--primary); color: white;
+            border-radius: 20px; font-size: 0.9rem; font-weight: bold;
+            box-shadow: 0 3px 8px rgba(212, 163, 115, 0.4); border: none;
         }
-        .btn-author-highlight:active { transform: scale(0.95); }
         .btn-author-highlight span { font-size: 1.1rem; }
 
-        /* --- 主內容區 --- */
+        /* --- Main --- */
         main {
             flex: 1; overflow-y: auto; padding: 0 20px 100px 20px;
             -webkit-overflow-scrolling: touch;
         }
 
-        /* 資產卡片 */
+        /* 語錄區 */
+        .quote-section {
+            text-align: center; margin-bottom: 15px; font-size: 0.85rem; color: #666;
+            background: #fff; padding: 10px; border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px dashed #ddd;
+        }
+        .quote-text { font-style: italic; margin-bottom: 5px; display: block; }
+        .quote-link { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 0.8rem; }
+
+        /* 月份選擇器 */
+        .month-selector {
+            display: flex; align-items: center; justify-content: space-between;
+            background: white; padding: 10px 15px; border-radius: 12px;
+            margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .month-selector input {
+            border: none; font-size: 1rem; color: var(--text-main);
+            background: transparent; font-weight: bold; font-family: inherit; text-align: right;
+        }
+
+        /* 儀表板 */
         .dashboard-card {
             background: linear-gradient(135deg, var(--primary) 0%, #E6B89C 100%);
             color: white; padding: 20px; border-radius: var(--radius);
@@ -90,20 +97,31 @@
             content: ""; position: absolute; top: -20px; right: -20px;
             width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%;
         }
-        .balance-label { font-size: 0.9rem; opacity: 0.9; }
+        .balance-label { font-size: 0.9rem; opacity: 0.9; display: flex; justify-content: space-between;}
         .balance-amount { font-size: 2.2rem; font-weight: bold; margin: 5px 0 15px 0; }
         .stats-row { display: flex; gap: 20px; }
         .stat-item span { font-size: 0.8rem; opacity: 0.8; display: block; }
         .stat-item strong { font-size: 1.1rem; }
 
-        /* 列表標題 */
-        .section-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        /* 收支條狀圖 */
+        .visual-bar-container { margin-top: 15px; }
+        .visual-bar-info { 
+            display: flex; justify-content: space-between; font-size: 0.75rem; 
+            margin-bottom: 4px; opacity: 0.9; 
         }
+        .progress-bar-bg {
+            background: rgba(255,255,255,0.3); height: 8px; border-radius: 4px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            background: #fff; height: 100%; width: 0%; border-radius: 4px;
+            transition: width 0.5s, background-color 0.5s;
+        }
+
+        /* 列表 */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .section-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); }
         .btn-text { background:none; border:none; color:var(--primary); font-size:0.9rem; cursor:pointer;}
 
-        /* 交易列表 */
         .tx-list { list-style: none; padding: 0; margin: 0; }
         .tx-item {
             background: var(--card-bg); margin-bottom: 12px; padding: 15px;
@@ -116,10 +134,9 @@
         .tx-amount { font-weight: bold; font-size: 1.1rem; }
         .tx-amount.income { color: var(--accent-green); }
         .tx-amount.expense { color: var(--accent-red); }
-        
         .empty-state { text-align: center; color: var(--text-light); padding: 40px 0; font-size: 0.9rem; }
 
-        /* --- 懸浮按鈕 (FAB) --- */
+        /* FAB */
         .fab {
             position: fixed; bottom: 30px; right: 25px;
             width: 60px; height: 60px; background: var(--text-main); color: white;
@@ -129,7 +146,7 @@
         }
         .fab:active { transform: scale(0.9); }
 
-        /* --- 彈出視窗 (Modal) --- */
+        /* Modals */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4); z-index: 200;
@@ -137,94 +154,67 @@
             opacity: 0; transition: opacity 0.3s;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
-
         .modal-card {
             background: #fff; width: 100%; max-width: 500px;
             border-radius: 20px 20px 0 0; padding: 25px; box-sizing: border-box;
             transform: translateY(100%); transition: transform 0.3s;
-            max-height: 85vh; overflow-y: auto;
+            max-height: 90vh; overflow-y: auto;
         }
         .modal-overlay.active .modal-card { transform: translateY(0); }
 
-        /* 輸入表單樣式 */
+        /* Form elements */
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; }
-        
-        .type-toggle { display: flex; background: #f0f0f0; border-radius: 12px; padding: 4px; }
-        .type-btn {
-            flex: 1; padding: 10px; border: none; background: transparent;
-            border-radius: 10px; font-weight: bold; color: var(--text-light);
-            cursor: pointer; transition: 0.2s;
-        }
-        .type-btn.active[data-val="expense"] { background: #fff; color: var(--accent-red); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .type-btn.active[data-val="income"] { background: #fff; color: var(--accent-green); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-
         input, select {
             width: 100%; padding: 14px; border: 1px solid #eee; border-radius: 12px;
             font-size: 1.1rem; background: #FAFAFA; box-sizing: border-box;
         }
-        input:focus { outline: none; border-color: var(--primary); background: #fff; }
-
-        .btn-block {
-            width: 100%; padding: 15px; border: none; border-radius: 12px;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px;
+        .type-toggle { display: flex; background: #f0f0f0; border-radius: 12px; padding: 4px; }
+        .type-btn {
+            flex: 1; padding: 10px; border: none; background: transparent;
+            border-radius: 10px; font-weight: bold; color: var(--text-light); cursor: pointer;
         }
+        .type-btn.active[data-val="expense"] { background: #fff; color: var(--accent-red); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .type-btn.active[data-val="income"] { background: #fff; color: var(--accent-green); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .btn-block { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-save { background: var(--text-main); color: white; }
         .btn-close { background: #f0f0f0; color: #666; margin-top: 10px; }
 
-        /* 報表表格 */
+        /* 設定頁面樣式 */
+        .settings-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #eee; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag-chip {
+            background: #f0f0f0; padding: 6px 12px; border-radius: 20px; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .tag-del { color: #999; cursor: pointer; font-weight: bold; padding: 0 4px; }
+        .tag-del:hover { color: var(--accent-red); }
+        .add-cat-row { display: flex; gap: 10px; margin-top: 10px; }
+
+        /* Table */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px 5px; text-align: right; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem;}
         th { color: var(--text-light); font-weight: normal; text-align: center; background: #fafafa; }
         td:first-child { text-align: center; color: var(--text-main); font-weight: bold; }
 
-        /* 工具按鈕區 */
-        .tools-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-            margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd;
-        }
-        .tool-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 15px; border-radius: 12px; border: 1px solid #eee;
-            background: #fff; cursor: pointer; color: var(--text-main); font-size: 0.9rem;
-        }
-        .tool-btn:active { background: #f9f9f9; transform: scale(0.98); }
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; }
+        .tool-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #fff; cursor: pointer; color: var(--text-main); font-size: 0.9rem; }
         .tool-btn span { font-size: 1.5rem; margin-bottom: 5px; }
 
-        /* --- 說明區塊 (Accordion) --- */
-        details {
-            background: #F9F9F9; border-radius: 12px; padding: 12px;
-            margin-bottom: 12px; border: 1px solid #eee;
-        }
-        summary {
-            font-weight: bold; cursor: pointer; color: var(--text-main);
-            display: flex; justify-content: space-between; align-items: center;
-            list-style: none;
-        }
+        details { background: #F9F9F9; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #eee; }
+        summary { font-weight: bold; cursor: pointer; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; list-style: none; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '+'; font-size: 1.2rem; color: var(--primary); }
         details[open] summary::after { content: '-'; }
-        
-        .info-content {
-            margin-top: 10px; font-size: 0.9rem; line-height: 1.6; color: #666;
-            border-top: 1px solid #eee; padding-top: 10px;
-        }
-        .info-step { margin-bottom: 10px; }
-        .info-badge { 
-            background: var(--primary); color: white; padding: 2px 6px; 
-            border-radius: 4px; font-size: 0.75rem; margin-right: 5px; 
-        }
+        .info-content { margin-top: 10px; font-size: 0.9rem; line-height: 1.6; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
 
-        /* 列印樣式 */
         @media print {
             body * { visibility: hidden; }
             #reportModal, #reportModal * { visibility: visible; }
-            #reportModal {
-                position: absolute; left: 0; top: 0; width: 100%; height: auto;
-                background: white; transform: none !important; opacity: 1 !important; display: block !important;
-            }
+            #reportModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; transform: none !important; opacity: 1 !important; display: block !important; }
             .modal-card { box-shadow: none; padding: 0; max-width: 100%; transform: none !important; }
-            .no-print, .btn-close, .tools-grid, .backup-area, .header-actions { display: none !important; }
+            .no-print, .btn-close, .tools-grid, .header-actions, .month-selector, .quote-section { display: none !important; }
             table { font-size: 12pt; border: 1px solid #000; }
             th, td { border: 1px solid #000; padding: 10px; color: black !important; }
             .print-only-header { display: block !important; text-align: center; font-size: 18pt; margin-bottom: 20px; font-weight: bold;}
@@ -238,11 +228,11 @@
 <header>
     <div class="brand">🌱 小資日記</div>
     <div class="header-actions">
-        <!-- 說明按鈕 (保持小圖示) -->
-        <button class="btn-icon-link" onclick="openModal('infoModal')" title="說明與教學">
-            ℹ️
-        </button>
-        <!-- 🔥 顯眼的作者按鈕 (文字 + 拿鐵色背景) 🔥 -->
+        <!-- 設定按鈕 -->
+        <button class="btn-icon-link" onclick="openModal('settingsModal')" title="設定">⚙️</button>
+        <!-- 說明按鈕 -->
+        <button class="btn-icon-link" onclick="openModal('infoModal')" title="說明與教學">ℹ️</button>
+        <!-- 作者按鈕 -->
         <a href="https://vocus.cc/user/@WUCJ" target="_blank" class="btn-author-highlight" title="前往作者部落格">
             <span>✨</span> 逛逛作者部落格
         </a>
@@ -250,10 +240,29 @@
 </header>
 
 <main>
+    <!-- 小資語錄區 -->
+    <div class="quote-section" id="quoteSection">
+        <span class="quote-text" id="dailyQuote">"你不理財，財不理你"</span>
+        <a href="https://vocus.cc/user/@WUCJ" target="_blank" class="quote-link">👉 更多理財心法請看部落格</a>
+    </div>
+
+    <!-- 月份選擇器 -->
+    <div class="month-selector">
+        <span style="color:var(--text-light); font-size:0.9rem;">📅 帳本月份：</span>
+        <input type="month" id="currentMonthPicker" onchange="refreshUI()">
+    </div>
+
     <!-- 儀表板 -->
     <div class="dashboard-card">
-        <div class="balance-label">本月結餘 (Balance)</div>
-        <div class="balance-amount" id="displayBalance">$0</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="balance-label">
+                    本月結餘 <span id="budgetStatusText" style="font-size:0.8rem; opacity:0.8;"></span>
+                </div>
+                <div class="balance-amount" id="displayBalance">$0</div>
+            </div>
+        </div>
+
         <div class="stats-row">
             <div class="stat-item">
                 <span>總收入</span>
@@ -264,25 +273,34 @@
                 <strong id="displayExpense">$0</strong>
             </div>
         </div>
+
+        <!-- 視覺化收支條 -->
+        <div class="visual-bar-container">
+            <div class="visual-bar-info">
+                <span id="barLabel">支出佔比</span>
+                <span id="barPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="expenseBar"></div>
+            </div>
+        </div>
     </div>
 
     <!-- 列表標題 -->
     <div class="section-header">
-        <div class="section-title">📝 近期紀錄</div>
+        <div class="section-title">📝 收支明細</div>
         <button class="btn-text" onclick="showReport()">📊 管理與報表</button>
     </div>
 
     <!-- 交易列表 -->
-    <ul class="tx-list" id="txList">
-        <!-- JS 動態插入 -->
-    </ul>
+    <ul class="tx-list" id="txList"></ul>
 
     <div style="text-align: center; margin-top: 30px; color: #ccc; font-size: 0.8rem;">
         離線版 • 資料僅存於手機
     </div>
 </main>
 
-<!-- 懸浮按鈕 (FAB) -->
+<!-- FAB -->
 <div class="fab" onclick="openInputModal()">＋</div>
 
 <!-- 1. 記帳輸入彈窗 -->
@@ -323,7 +341,45 @@
     </div>
 </div>
 
-<!-- 2. 年度報表與工具彈窗 -->
+<!-- 2. 設定彈窗 (新增分類與預算) -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+        <h3 style="margin:0 0 20px 0; text-align:center;">⚙️ 設定</h3>
+        
+        <!-- 預算設定 -->
+        <div class="settings-section">
+            <label class="form-label">🎯 每月預算上限 (0 代表不設限)</label>
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="budgetInput" placeholder="例如：20000">
+                <button class="btn-save" style="width:80px; margin-top:0;" onclick="saveBudget()">儲存</button>
+            </div>
+            <p style="font-size:0.8rem; color:#888; margin-top:5px;">設定後，儀表板的進度條將改為顯示「預算使用率」。</p>
+        </div>
+
+        <!-- 分類管理 -->
+        <div class="settings-section">
+            <label class="form-label">📂 管理支出分類</label>
+            <div class="tags-container" id="expenseTags"></div>
+            <div class="add-cat-row">
+                <input type="text" id="newExpCat" placeholder="新增支出分類...">
+                <button class="btn-save" style="width:60px; margin-top:0;" onclick="addCategory('expense')">＋</button>
+            </div>
+        </div>
+
+        <div class="settings-section" style="border-bottom:none;">
+            <label class="form-label">📂 管理收入分類</label>
+            <div class="tags-container" id="incomeTags"></div>
+            <div class="add-cat-row">
+                <input type="text" id="newIncCat" placeholder="新增收入分類...">
+                <button class="btn-save" style="width:60px; margin-top:0;" onclick="addCategory('income')">＋</button>
+            </div>
+        </div>
+
+        <button class="btn-block btn-close" onclick="closeModal('settingsModal')">關閉</button>
+    </div>
+</div>
+
+<!-- 3. 年度報表 -->
 <div class="modal-overlay" id="reportModal">
     <div class="modal-card">
         <div class="print-only-header">小資日記 - 年度收支報表</div>
@@ -331,14 +387,11 @@
         
         <div style="overflow-x: auto;">
             <table id="reportTable">
-                <thead>
-                    <tr><th>月份</th><th>收入</th><th>支出</th><th>結餘</th></tr>
-                </thead>
+                <thead><tr><th>月份</th><th>收入</th><th>支出</th><th>結餘</th></tr></thead>
                 <tbody id="reportBody"></tbody>
             </table>
         </div>
         
-        <!-- 工具區 -->
         <div class="tools-grid no-print">
             <button class="tool-btn" onclick="exportData()"><span>📥</span> 匯出備份</button>
             <button class="tool-btn" onclick="document.getElementById('importFile').click()"><span>📤</span> 匯入資料</button>
@@ -351,68 +404,81 @@
     </div>
 </div>
 
-<!-- 3. 說明與隱私彈窗 -->
+<!-- 4. 說明 -->
 <div class="modal-overlay" id="infoModal">
     <div class="modal-card">
         <h3 style="margin:0 0 20px 0; text-align:center;">ℹ️ 說明與隱私</h3>
-
         <details open>
             <summary>📲 如何放在手機桌面 (App化)</summary>
             <div class="info-content">
-                <div class="info-step">
-                    <b>🍎 iPhone (Safari):</b><br>
-                    點擊下方「分享」按鈕 <span style="font-size:1.2rem;">⏏️</span> → 往下滑找到並點選「加入主畫面」 <span style="font-size:1.2rem;">➕</span>。
-                </div>
-                <div class="info-step">
-                    <b>🤖 Android (Chrome):</b><br>
-                    點擊右上角「選單」 <span style="font-size:1.2rem;">⋮</span> → 選擇「安裝應用程式」或「加到主畫面」。
-                </div>
-                <p style="font-size:0.8rem; color:#888;">設定後，此網頁將能像 App 一樣全螢幕開啟，使用體驗更佳！</p>
+                <p><b>🍎 iPhone (Safari):</b> 點擊「分享」<span style="font-size:1.2rem;">⏏️</span> → 「加入主畫面」<span style="font-size:1.2rem;">➕</span>。</p>
+                <p><b>🤖 Android (Chrome):</b> 點擊選單 <span style="font-size:1.2rem;">⋮</span> → 「安裝應用程式」。</p>
             </div>
         </details>
-
         <details>
-            <summary>🛡️ 隱私權與資料聲明</summary>
+            <summary>⚙️ 新功能教學</summary>
             <div class="info-content">
-                <p>本網頁應用程式採<b>「完全離線」</b>設計：</p>
-                <ul>
-                    <li>您的記帳資料只儲存在<b>這台裝置的瀏覽器</b>中。</li>
-                    <li>我們<b>沒有</b>後端伺服器，不會上傳、不會收集、也不會偷看您的任何財務隱私。</li>
-                    <li>請務必定期使用「匯出備份」功能，以免清除瀏覽器快取時遺失資料。</li>
-                </ul>
+                <p><span class="info-badge">月份</span>上方可切換不同月份查看帳本。</p>
+                <p><span class="info-badge">預算</span>點擊右上角「⚙️ 設定」可設定每月預算上限，進度條超過80%會變色提醒。</p>
+                <p><span class="info-badge">分類</span>在設定中可新增或刪除自己喜歡的分類。</p>
             </div>
         </details>
-
-        <details>
-            <summary>📖 基本操作指南</summary>
-            <div class="info-content">
-                <p><span class="info-badge">記帳</span>點擊右下角「＋」按鈕。</p>
-                <p><span class="info-badge">刪除</span>點擊每筆紀錄右側的「×」符號。</p>
-                <p><span class="info-badge">報表</span>點擊「管理與報表」查看年度統計。</p>
-                <p><span class="info-badge">備份</span>在報表頁面點擊「匯出備份」，會下載 .json 檔。</p>
-            </div>
-        </details>
-
         <button class="btn-block btn-close" onclick="closeModal('infoModal')">了解，關閉</button>
     </div>
 </div>
 
 <script>
-    // === 1. 初始化資料與設定 ===
+    // === 1. 初始化資料 ===
     let transactions = JSON.parse(localStorage.getItem('cozyFinanceData')) || [];
-    const categories = {
-        expense: ['🍱 餐飲伙食', '🚗 交通通勤', '🏠 居家房租', '🛍️ 購物消費', '🎬 娛樂交際', '💊 醫療保健', '📚 學習進修', '📦 其他支出'],
-        income: ['💼 薪資收入', '🧧 獎金紅包', '📈 投資理財', '🤝 兼職外快', '💵 其他收入']
+    let settings = JSON.parse(localStorage.getItem('cozySettings')) || {
+        budget: 0,
+        categories: {
+            expense: ['🍱 餐飲伙食', '🚗 交通通勤', '🏠 居家房租', '🛍️ 購物消費', '🎬 娛樂交際', '💊 醫療保健', '📚 學習進修', '📦 其他支出'],
+            income: ['💼 薪資收入', '🧧 獎金紅包', '📈 投資理財', '🤝 兼職外快', '💵 其他收入']
+        }
     };
+
+    const quotes = [
+        "你不理財，財不理你。",
+        "省下的就是賺到的。",
+        "記帳是理財的第一步。",
+        "想要不等於需要。",
+        "複利是世界第八大奇蹟。",
+        "投資自己是回報率最高的投資。",
+        "每一塊錢都是你的士兵。",
+        "存錢是為了未來的自由。"
+    ];
 
     window.onload = function() {
+        // 設定今日日期
         document.getElementById('txDate').valueAsDate = new Date();
+        // 設定當前月份
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        document.getElementById('currentMonthPicker').value = `${yyyy}-${mm}`;
+        
+        // 載入預算
+        document.getElementById('budgetInput').value = settings.budget || '';
+
         setType('expense');
         refreshUI();
+        showRandomQuote();
     };
 
-    // === 2. 視窗控制 ===
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    // === 2. 核心邏輯 ===
+    
+    // 顯示隨機語錄
+    function showRandomQuote() {
+        const idx = Math.floor(Math.random() * quotes.length);
+        document.getElementById('dailyQuote').innerText = `"${quotes[idx]}"`;
+    }
+
+    // 視窗控制
+    function openModal(id) { 
+        document.getElementById(id).classList.add('active'); 
+        if(id === 'settingsModal') renderCategorySettings();
+    }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     
     function openInputModal() {
@@ -430,7 +496,7 @@
         });
     });
 
-    // === 3. 記帳邏輯 ===
+    // 記帳相關
     function setType(type) {
         document.getElementById('txType').value = type;
         document.querySelectorAll('.type-btn').forEach(btn => {
@@ -439,7 +505,7 @@
         });
         const select = document.getElementById('txCategory');
         select.innerHTML = '';
-        categories[type].forEach(cat => {
+        settings.categories[type].forEach(cat => {
             const opt = document.createElement('option');
             opt.value = cat; opt.innerText = cat;
             select.appendChild(opt);
@@ -458,7 +524,7 @@
         transactions.push({ id: Date.now(), date, type, category, amount, note });
         transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        saveToLocal(); refreshUI(); closeModal('inputModal');
+        saveToLocal(); refreshUI(); closeModal('inputModal'); showRandomQuote();
     }
 
     function deleteTx(id) {
@@ -468,31 +534,123 @@
         }
     }
 
+    // === 3. 設定與分類管理 ===
+
+    function saveBudget() {
+        const val = parseFloat(document.getElementById('budgetInput').value);
+        settings.budget = isNaN(val) ? 0 : val;
+        localStorage.setItem('cozySettings', JSON.stringify(settings));
+        refreshUI();
+        alert("預算已更新！");
+    }
+
+    function renderCategorySettings() {
+        ['expense', 'income'].forEach(type => {
+            const container = document.getElementById(type + 'Tags');
+            container.innerHTML = '';
+            settings.categories[type].forEach((cat, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `${cat} <span class="tag-del" onclick="removeCategory('${type}', ${index})">×</span>`;
+                container.appendChild(chip);
+            });
+        });
+    }
+
+    function addCategory(type) {
+        const input = document.getElementById(type === 'expense' ? 'newExpCat' : 'newIncCat');
+        const val = input.value.trim();
+        if(val) {
+            settings.categories[type].push(val);
+            localStorage.setItem('cozySettings', JSON.stringify(settings));
+            input.value = '';
+            renderCategorySettings();
+            // 如果當前記帳視窗開著，也即時更新選單
+            if(document.getElementById('inputModal').classList.contains('active')) {
+                setType(document.getElementById('txType').value);
+            }
+        }
+    }
+
+    function removeCategory(type, index) {
+        if(confirm(`確定刪除分類「${settings.categories[type][index]}」嗎？`)) {
+            settings.categories[type].splice(index, 1);
+            localStorage.setItem('cozySettings', JSON.stringify(settings));
+            renderCategorySettings();
+            if(document.getElementById('inputModal').classList.contains('active')) {
+                setType(document.getElementById('txType').value);
+            }
+        }
+    }
+
     function saveToLocal() { localStorage.setItem('cozyFinanceData', JSON.stringify(transactions)); }
 
-    // === 4. UI 渲染 ===
+    // === 4. UI 刷新與計算 ===
+
     function refreshUI() {
-        const nowStr = new Date().toISOString().slice(0, 7);
-        let inc = 0, exp = 0;
+        const selectedMonth = document.getElementById('currentMonthPicker').value; // yyyy-mm
         
+        let inc = 0, exp = 0;
+        const filteredList = [];
+
         transactions.forEach(t => {
-            if (t.date.startsWith(nowStr)) {
+            if (t.date.startsWith(selectedMonth)) {
                 if (t.type === 'income') inc += t.amount; else exp += t.amount;
+                filteredList.push(t);
             }
         });
 
+        // 更新數字
         document.getElementById('displayIncome').innerText = `$${inc.toLocaleString()}`;
         document.getElementById('displayExpense').innerText = `$${exp.toLocaleString()}`;
         document.getElementById('displayBalance').innerText = `$${(inc - exp).toLocaleString()}`;
 
+        // 更新條狀圖 (Visual Bar)
+        const budget = settings.budget;
+        const bar = document.getElementById('expenseBar');
+        const barLabel = document.getElementById('barLabel');
+        const barPercent = document.getElementById('barPercent');
+        const budgetStatusText = document.getElementById('budgetStatusText');
+        
+        let percentage = 0;
+        let isBudgetMode = budget > 0;
+
+        if (isBudgetMode) {
+            // 有預算模式
+            percentage = Math.min((exp / budget) * 100, 100);
+            barLabel.innerText = '預算使用率';
+            budgetStatusText.innerText = `(預算剩餘 $${(budget - exp).toLocaleString()})`;
+        } else {
+            // 無預算模式 (使用支出/收入比)
+            const total = inc > 0 ? inc : (exp > 0 ? exp : 1);
+            percentage = Math.min((exp / total) * 100, 100);
+            barLabel.innerText = '支出佔收入比';
+            budgetStatusText.innerText = '';
+        }
+
+        bar.style.width = percentage + '%';
+        barPercent.innerText = Math.round(percentage) + '%';
+        
+        // 顏色邏輯
+        if (percentage >= 100 && isBudgetMode) {
+            bar.style.backgroundColor = 'var(--accent-red)'; // 爆預算 (紅)
+        } else if (percentage >= 80) {
+            bar.style.backgroundColor = isBudgetMode ? 'var(--accent-red)' : 'var(--accent-warn)'; // 警戒 (橘/紅)
+        } else {
+            bar.style.backgroundColor = '#fff'; // 正常 (白)
+        }
+
+        // 更新列表
         const list = document.getElementById('txList');
         list.innerHTML = '';
-        if (transactions.length === 0) {
-            list.innerHTML = '<li class="empty-state">還沒有記帳紀錄，點擊右下角 + 開始記帳</li>';
+        if (filteredList.length === 0) {
+            list.innerHTML = `<li class="empty-state">
+                ${selectedMonth} 尚無資料<br>點擊右下角 + 新增
+            </li>`;
             return;
         }
 
-        transactions.slice(0, 20).forEach(t => {
+        filteredList.forEach(t => {
             const isInc = t.type === 'income';
             const li = document.createElement('li');
             li.className = 'tx-item';
@@ -511,7 +669,8 @@
         });
     }
 
-    // === 5. 報表與工具 ===
+    // === 5. 報表與匯出入 ===
+
     function generateReport() {
         const tbody = document.getElementById('reportBody'); tbody.innerHTML = '';
         const stats = {};
@@ -537,8 +696,12 @@
     }
 
     function exportData() {
+        const data = {
+            transactions: transactions,
+            settings: settings
+        };
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(transactions, null, 2)], {type: "application/json"}));
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: "application/json"}));
         a.download = `小資日記備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
     }
     
@@ -548,10 +711,23 @@
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                if(Array.isArray(data) && confirm("⚠️ 確定匯入？將覆蓋目前資料。")) {
-                    transactions = data; saveToLocal(); refreshUI(); alert("✅ 匯入成功！");
-                    if(document.getElementById('reportModal').classList.contains('active')) generateReport();
+                // 相容舊版 (只有 transactions 陣列) 與 新版 (包含 settings 物件)
+                if(Array.isArray(data)) {
+                    if(confirm("⚠️ 檢測到舊版備份，確定匯入？")) {
+                        transactions = data; 
+                        saveToLocal(); refreshUI(); alert("✅ 匯入成功！");
+                    }
+                } else if (data.transactions) {
+                    if(confirm("⚠️ 確定匯入？這將覆蓋目前的帳本與設定。")) {
+                        transactions = data.transactions;
+                        if(data.settings) {
+                            settings = data.settings;
+                            localStorage.setItem('cozySettings', JSON.stringify(settings));
+                        }
+                        saveToLocal(); refreshUI(); alert("✅ 匯入成功！");
+                    }
                 }
+                if(document.getElementById('reportModal').classList.contains('active')) generateReport();
             } catch(err) { alert("❌ 格式錯誤"); }
         };
         reader.readAsText(file); input.value = '';
