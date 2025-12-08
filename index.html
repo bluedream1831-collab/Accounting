@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🌿 小資暖心記帳</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🌿 小資日記</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+    
     <style>
         :root {
-            /* 溫馨生活感配色 (Warm Earthy Tones) */
+            /* 溫馨生活感配色 */
             --bg-color: #F7F5F2;       /* 米白背景 */
             --card-bg: #FFFFFF;        /* 卡片白 */
-            --primary: #D4A373;        /* 拿鐵色 (主色) */
+            --primary: #D4A373;        /* 拿鐵色 */
             --primary-dark: #b08155;   
-            --accent-green: #8DA399;   /* 鼠尾草綠 (收入/確認) */
-            --accent-red: #E07A5F;     /* 陶土紅 (支出/刪除) */
-            --text-main: #4A4A4A;      /* 深灰字體 (不全黑) */
-            --text-light: #8D8D8D;     /* 淺灰字體 */
-            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --accent-green: #8DA399;   /* 鼠尾草綠 */
+            --accent-red: #E07A5F;     /* 陶土紅 */
+            --text-main: #4A4A4A;      /* 深灰 */
+            --text-light: #8D8D8D;     /* 淺灰 */
             --radius: 16px;
         }
 
@@ -23,87 +26,79 @@
             font-family: -apple-system, "微軟正黑體", "Helvetica Neue", sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* 防止整個頁面捲動 */
+            display: flex; flex-direction: column;
+            overflow: hidden; 
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* --- 頂部導航 --- */
         header {
-            padding: 15px 20px;
+            padding: 12px 20px;
             background: var(--bg-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             z-index: 10;
         }
 
         .brand {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 1.3rem; font-weight: bold; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 5px;
         }
 
-        .author-link {
-            font-size: 0.9rem;
-            color: var(--text-main);
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        /* 說明按鈕 (小圖示) */
+        .btn-icon-link {
+            text-decoration: none; display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; background: #fff; border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid #eee;
+            font-size: 1.1rem; transition: 0.2s; cursor: pointer;
+        }
+        
+        /* 🔥 顯眼的作者按鈕 (拿鐵色背景) 🔥 */
+        .btn-author-highlight {
             text-decoration: none;
-            padding: 6px 12px;
-            background: #fff;
+            display: flex; align-items: center; gap: 5px;
+            padding: 8px 16px;
+            background: var(--primary); /* 使用主色調 */
+            color: white;
             border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: 0.2s;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(212, 163, 115, 0.4);
+            transition: transform 0.2s;
+            border: none;
         }
-        .author-link:active { transform: scale(0.95); }
+        .btn-author-highlight:active { transform: scale(0.95); }
+        .btn-author-highlight span { font-size: 1.1rem; }
 
-        /* --- 主內容區 (可捲動) --- */
+        /* --- 主內容區 --- */
         main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 20px 80px 20px; /* 底部留白給按鈕 */
+            flex: 1; overflow-y: auto; padding: 0 20px 100px 20px;
             -webkit-overflow-scrolling: touch;
         }
 
         /* 資產卡片 */
         .dashboard-card {
             background: linear-gradient(135deg, var(--primary) 0%, #E6B89C 100%);
-            color: white;
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
+            color: white; padding: 20px; border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(212, 163, 115, 0.3);
+            margin-bottom: 20px; position: relative; overflow: hidden;
         }
-        
-        /* 裝飾圓圈 */
         .dashboard-card::after {
-            content: "";
-            position: absolute;
-            top: -20px; right: -20px;
-            width: 100px; height: 100px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
+            content: ""; position: absolute; top: -20px; right: -20px;
+            width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%;
         }
-
         .balance-label { font-size: 0.9rem; opacity: 0.9; }
         .balance-amount { font-size: 2.2rem; font-weight: bold; margin: 5px 0 15px 0; }
         .stats-row { display: flex; gap: 20px; }
         .stat-item span { font-size: 0.8rem; opacity: 0.8; display: block; }
         .stat-item strong { font-size: 1.1rem; }
 
-        /* 清單標題區 */
+        /* 列表標題 */
         .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
         }
         .section-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); }
         .btn-text { background:none; border:none; color:var(--primary); font-size:0.9rem; cursor:pointer;}
@@ -111,13 +106,8 @@
         /* 交易列表 */
         .tx-list { list-style: none; padding: 0; margin: 0; }
         .tx-item {
-            background: var(--card-bg);
-            margin-bottom: 12px;
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--card-bg); margin-bottom: 12px; padding: 15px;
+            border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
         .tx-left { display: flex; flex-direction: column; gap: 4px; }
@@ -127,59 +117,32 @@
         .tx-amount.income { color: var(--accent-green); }
         .tx-amount.expense { color: var(--accent-red); }
         
-        .empty-state {
-            text-align: center;
-            color: var(--text-light);
-            padding: 40px 0;
-            font-size: 0.9rem;
-        }
+        .empty-state { text-align: center; color: var(--text-light); padding: 40px 0; font-size: 0.9rem; }
 
         /* --- 懸浮按鈕 (FAB) --- */
         .fab {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
-            background: var(--text-main);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 100;
-            transition: transform 0.2s;
+            position: fixed; bottom: 30px; right: 25px;
+            width: 60px; height: 60px; background: var(--text-main); color: white;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer; z-index: 100; transition: transform 0.2s;
         }
         .fab:active { transform: scale(0.9); }
 
         /* --- 彈出視窗 (Modal) --- */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 200;
-            display: none;
-            justify-content: center;
-            align-items: flex-end; /* 手機版從底部滑出 */
-            opacity: 0;
-            transition: opacity 0.3s;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 200;
+            display: none; justify-content: center; align-items: flex-end;
+            opacity: 0; transition: opacity 0.3s;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
 
         .modal-card {
-            background: #fff;
-            width: 100%;
-            max-width: 500px; /* 電腦版限制寬度 */
-            border-radius: 20px 20px 0 0;
-            padding: 25px;
-            box-sizing: border-box;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-            max-height: 90vh;
-            overflow-y: auto;
+            background: #fff; width: 100%; max-width: 500px;
+            border-radius: 20px 20px 0 0; padding: 25px; box-sizing: border-box;
+            transform: translateY(100%); transition: transform 0.3s;
+            max-height: 85vh; overflow-y: auto;
         }
         .modal-overlay.active .modal-card { transform: translateY(0); }
 
@@ -187,47 +150,24 @@
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; }
         
-        /* 類型切換按鈕 */
-        .type-toggle {
-            display: flex;
-            background: #f0f0f0;
-            border-radius: 12px;
-            padding: 4px;
-        }
+        .type-toggle { display: flex; background: #f0f0f0; border-radius: 12px; padding: 4px; }
         .type-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 10px;
-            font-weight: bold;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: 0.2s;
+            flex: 1; padding: 10px; border: none; background: transparent;
+            border-radius: 10px; font-weight: bold; color: var(--text-light);
+            cursor: pointer; transition: 0.2s;
         }
-        .type-btn.active[data-val="expense"] { background: #fff; color: var(--accent-red); shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .type-btn.active[data-val="income"] { background: #fff; color: var(--accent-green); shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .type-btn.active[data-val="expense"] { background: #fff; color: var(--accent-red); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .type-btn.active[data-val="income"] { background: #fff; color: var(--accent-green); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         input, select {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            background: #FAFAFA;
-            box-sizing: border-box;
+            width: 100%; padding: 14px; border: 1px solid #eee; border-radius: 12px;
+            font-size: 1.1rem; background: #FAFAFA; box-sizing: border-box;
         }
         input:focus { outline: none; border-color: var(--primary); background: #fff; }
 
         .btn-block {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
         .btn-save { background: var(--text-main); color: white; }
         .btn-close { background: #f0f0f0; color: #666; margin-top: 10px; }
@@ -235,26 +175,61 @@
         /* 報表表格 */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px 5px; text-align: right; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem;}
-        th { color: var(--text-light); font-weight: normal; text-align: center; }
+        th { color: var(--text-light); font-weight: normal; text-align: center; background: #fafafa; }
         td:first-child { text-align: center; color: var(--text-main); font-weight: bold; }
 
-        /* 備份區塊 */
-        .backup-area {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            text-align: center;
+        /* 工具按鈕區 */
+        .tools-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd;
         }
-        .btn-small {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #666;
-            margin: 0 5px;
-            cursor: pointer;
+        .tool-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; border-radius: 12px; border: 1px solid #eee;
+            background: #fff; cursor: pointer; color: var(--text-main); font-size: 0.9rem;
         }
+        .tool-btn:active { background: #f9f9f9; transform: scale(0.98); }
+        .tool-btn span { font-size: 1.5rem; margin-bottom: 5px; }
+
+        /* --- 說明區塊 (Accordion) --- */
+        details {
+            background: #F9F9F9; border-radius: 12px; padding: 12px;
+            margin-bottom: 12px; border: 1px solid #eee;
+        }
+        summary {
+            font-weight: bold; cursor: pointer; color: var(--text-main);
+            display: flex; justify-content: space-between; align-items: center;
+            list-style: none;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '+'; font-size: 1.2rem; color: var(--primary); }
+        details[open] summary::after { content: '-'; }
+        
+        .info-content {
+            margin-top: 10px; font-size: 0.9rem; line-height: 1.6; color: #666;
+            border-top: 1px solid #eee; padding-top: 10px;
+        }
+        .info-step { margin-bottom: 10px; }
+        .info-badge { 
+            background: var(--primary); color: white; padding: 2px 6px; 
+            border-radius: 4px; font-size: 0.75rem; margin-right: 5px; 
+        }
+
+        /* 列印樣式 */
+        @media print {
+            body * { visibility: hidden; }
+            #reportModal, #reportModal * { visibility: visible; }
+            #reportModal {
+                position: absolute; left: 0; top: 0; width: 100%; height: auto;
+                background: white; transform: none !important; opacity: 1 !important; display: block !important;
+            }
+            .modal-card { box-shadow: none; padding: 0; max-width: 100%; transform: none !important; }
+            .no-print, .btn-close, .tools-grid, .backup-area, .header-actions { display: none !important; }
+            table { font-size: 12pt; border: 1px solid #000; }
+            th, td { border: 1px solid #000; padding: 10px; color: black !important; }
+            .print-only-header { display: block !important; text-align: center; font-size: 18pt; margin-bottom: 20px; font-weight: bold;}
+        }
+        .print-only-header { display: none; }
 
     </style>
 </head>
@@ -262,10 +237,16 @@
 
 <header>
     <div class="brand">🌱 小資日記</div>
-    <!-- 導流連結 -->
-    <a href="https://vocus.cc/user/@WUCJ" target="_blank" class="author-link">
-        🏠 關於作者
-    </a>
+    <div class="header-actions">
+        <!-- 說明按鈕 (保持小圖示) -->
+        <button class="btn-icon-link" onclick="openModal('infoModal')" title="說明與教學">
+            ℹ️
+        </button>
+        <!-- 🔥 顯眼的作者按鈕 (文字 + 拿鐵色背景) 🔥 -->
+        <a href="https://vocus.cc/user/@WUCJ" target="_blank" class="btn-author-highlight" title="前往作者部落格">
+            <span>✨</span> 逛逛作者部落格
+        </a>
+    </div>
 </header>
 
 <main>
@@ -288,18 +269,16 @@
     <!-- 列表標題 -->
     <div class="section-header">
         <div class="section-title">📝 近期紀錄</div>
-        <button class="btn-text" onclick="showReport()">📊 查看年度報表</button>
+        <button class="btn-text" onclick="showReport()">📊 管理與報表</button>
     </div>
 
     <!-- 交易列表 -->
     <ul class="tx-list" id="txList">
         <!-- JS 動態插入 -->
-        <li class="empty-state">尚未有紀錄，點擊右下角 ＋ 新增</li>
     </ul>
 
-    <!-- 底部版權/備份提示 -->
     <div style="text-align: center; margin-top: 30px; color: #ccc; font-size: 0.8rem;">
-        資料儲存於本機，隱私安全無虞
+        離線版 • 資料僅存於手機
     </div>
 </main>
 
@@ -344,10 +323,12 @@
     </div>
 </div>
 
-<!-- 2. 年度報表彈窗 -->
+<!-- 2. 年度報表與工具彈窗 -->
 <div class="modal-overlay" id="reportModal">
     <div class="modal-card">
-        <h3 style="margin:0 0 10px 0; text-align:center;">📅 年度收支表</h3>
+        <div class="print-only-header">小資日記 - 年度收支報表</div>
+        <h3 class="no-print" style="margin:0 0 10px 0; text-align:center;">📅 年度收支表</h3>
+        
         <div style="overflow-x: auto;">
             <table id="reportTable">
                 <thead>
@@ -357,22 +338,68 @@
             </table>
         </div>
         
-        <div class="backup-area">
-            <p style="font-size:0.8rem; margin-bottom:10px;">💾 資料管理 (備份/還原)</p>
-            <button class="btn-small" onclick="exportData()">匯出備份</button>
-            <button class="btn-small" onclick="document.getElementById('importFile').click()">匯入資料</button>
-            <button class="btn-small" style="color:var(--accent-red)" onclick="clearData()">清空</button>
-            <input type="file" id="importFile" style="display:none" onchange="importData(this)">
+        <!-- 工具區 -->
+        <div class="tools-grid no-print">
+            <button class="tool-btn" onclick="exportData()"><span>📥</span> 匯出備份</button>
+            <button class="tool-btn" onclick="document.getElementById('importFile').click()"><span>📤</span> 匯入資料</button>
+            <button class="tool-btn" onclick="window.print()"><span>🖨️</span> 列印報表</button>
+            <button class="tool-btn" style="color:var(--accent-red);" onclick="clearData()"><span>🗑️</span> 清空重置</button>
         </div>
-
+        <input type="file" id="importFile" style="display:none" onchange="importData(this)">
+        
         <button class="btn-block btn-close" onclick="closeModal('reportModal')">關閉</button>
+    </div>
+</div>
+
+<!-- 3. 說明與隱私彈窗 -->
+<div class="modal-overlay" id="infoModal">
+    <div class="modal-card">
+        <h3 style="margin:0 0 20px 0; text-align:center;">ℹ️ 說明與隱私</h3>
+
+        <details open>
+            <summary>📲 如何放在手機桌面 (App化)</summary>
+            <div class="info-content">
+                <div class="info-step">
+                    <b>🍎 iPhone (Safari):</b><br>
+                    點擊下方「分享」按鈕 <span style="font-size:1.2rem;">⏏️</span> → 往下滑找到並點選「加入主畫面」 <span style="font-size:1.2rem;">➕</span>。
+                </div>
+                <div class="info-step">
+                    <b>🤖 Android (Chrome):</b><br>
+                    點擊右上角「選單」 <span style="font-size:1.2rem;">⋮</span> → 選擇「安裝應用程式」或「加到主畫面」。
+                </div>
+                <p style="font-size:0.8rem; color:#888;">設定後，此網頁將能像 App 一樣全螢幕開啟，使用體驗更佳！</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>🛡️ 隱私權與資料聲明</summary>
+            <div class="info-content">
+                <p>本網頁應用程式採<b>「完全離線」</b>設計：</p>
+                <ul>
+                    <li>您的記帳資料只儲存在<b>這台裝置的瀏覽器</b>中。</li>
+                    <li>我們<b>沒有</b>後端伺服器，不會上傳、不會收集、也不會偷看您的任何財務隱私。</li>
+                    <li>請務必定期使用「匯出備份」功能，以免清除瀏覽器快取時遺失資料。</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>📖 基本操作指南</summary>
+            <div class="info-content">
+                <p><span class="info-badge">記帳</span>點擊右下角「＋」按鈕。</p>
+                <p><span class="info-badge">刪除</span>點擊每筆紀錄右側的「×」符號。</p>
+                <p><span class="info-badge">報表</span>點擊「管理與報表」查看年度統計。</p>
+                <p><span class="info-badge">備份</span>在報表頁面點擊「匯出備份」，會下載 .json 檔。</p>
+            </div>
+        </details>
+
+        <button class="btn-block btn-close" onclick="closeModal('infoModal')">了解，關閉</button>
     </div>
 </div>
 
 <script>
     // === 1. 初始化資料與設定 ===
     let transactions = JSON.parse(localStorage.getItem('cozyFinanceData')) || [];
-
     const categories = {
         expense: ['🍱 餐飲伙食', '🚗 交通通勤', '🏠 居家房租', '🛍️ 購物消費', '🎬 娛樂交際', '💊 醫療保健', '📚 學習進修', '📦 其他支出'],
         income: ['💼 薪資收入', '🧧 獎金紅包', '📈 投資理財', '🤝 兼職外快', '💵 其他收入']
@@ -380,58 +407,44 @@
 
     window.onload = function() {
         document.getElementById('txDate').valueAsDate = new Date();
-        setType('expense'); // 預設支出
+        setType('expense');
         refreshUI();
     };
 
-    // === 2. UI 操作邏輯 ===
-
+    // === 2. 視窗控制 ===
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    
     function openInputModal() {
-        // 重置金額與備註，保留日期與分類
         document.getElementById('txAmount').value = '';
         document.getElementById('txNote').value = '';
-        document.getElementById('inputModal').classList.add('active');
-        document.getElementById('txAmount').focus(); // 自動聚焦金額
+        openModal('inputModal');
+        document.getElementById('txAmount').focus(); 
     }
+    
+    function showReport() { generateReport(); openModal('reportModal'); }
 
-    function showReport() {
-        generateReport();
-        document.getElementById('reportModal').classList.add('active');
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('active');
-    }
-
-    // 點擊遮罩關閉
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) overlay.classList.remove('active');
         });
     });
 
-    // 切換收支類型
+    // === 3. 記帳邏輯 ===
     function setType(type) {
         document.getElementById('txType').value = type;
-        
-        // 更新按鈕樣式
         document.querySelectorAll('.type-btn').forEach(btn => {
             btn.classList.remove('active');
             if(btn.dataset.val === type) btn.classList.add('active');
         });
-
-        // 更新分類選單
         const select = document.getElementById('txCategory');
         select.innerHTML = '';
         categories[type].forEach(cat => {
             const opt = document.createElement('option');
-            opt.value = cat;
-            opt.innerText = cat;
+            opt.value = cat; opt.innerText = cat;
             select.appendChild(opt);
         });
     }
-
-    // === 3. 核心記帳功能 ===
 
     function saveTransaction() {
         const date = document.getElementById('txDate').value;
@@ -440,47 +453,31 @@
         const amount = parseFloat(document.getElementById('txAmount').value);
         const note = document.getElementById('txNote').value.trim();
 
-        if (!date || isNaN(amount) || amount <= 0) {
-            alert("⚠️ 請輸入正確的金額與日期");
-            return;
-        }
+        if (!date || isNaN(amount) || amount <= 0) { alert("⚠️ 請輸入正確的金額與日期"); return; }
 
-        const newTx = {
-            id: Date.now(),
-            date, type, category, amount, note
-        };
-
-        transactions.push(newTx);
-        transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); // 日期排序
+        transactions.push({ id: Date.now(), date, type, category, amount, note });
+        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        saveToLocal();
-        refreshUI();
-        closeModal('inputModal');
+        saveToLocal(); refreshUI(); closeModal('inputModal');
     }
 
     function deleteTx(id) {
         if(confirm("確定要刪除這筆紀錄嗎？")) {
             transactions = transactions.filter(t => t.id !== id);
-            saveToLocal();
-            refreshUI();
+            saveToLocal(); refreshUI();
         }
     }
 
-    function saveToLocal() {
-        localStorage.setItem('cozyFinanceData', JSON.stringify(transactions));
-    }
+    function saveToLocal() { localStorage.setItem('cozyFinanceData', JSON.stringify(transactions)); }
 
-    // === 4. 畫面渲染 ===
-
+    // === 4. UI 渲染 ===
     function refreshUI() {
-        // 1. 計算本月結餘
-        const nowStr = new Date().toISOString().slice(0, 7); // yyyy-mm
+        const nowStr = new Date().toISOString().slice(0, 7);
         let inc = 0, exp = 0;
         
         transactions.forEach(t => {
             if (t.date.startsWith(nowStr)) {
-                if (t.type === 'income') inc += t.amount;
-                else exp += t.amount;
+                if (t.type === 'income') inc += t.amount; else exp += t.amount;
             }
         });
 
@@ -488,12 +485,10 @@
         document.getElementById('displayExpense').innerText = `$${exp.toLocaleString()}`;
         document.getElementById('displayBalance').innerText = `$${(inc - exp).toLocaleString()}`;
 
-        // 2. 渲染近期列表 (取前 20 筆)
         const list = document.getElementById('txList');
         list.innerHTML = '';
-        
         if (transactions.length === 0) {
-            list.innerHTML = '<li class="empty-state">還沒有記帳紀錄，點擊右下角 + 開始吧！</li>';
+            list.innerHTML = '<li class="empty-state">還沒有記帳紀錄，點擊右下角 + 開始記帳</li>';
             return;
         }
 
@@ -501,107 +496,69 @@
             const isInc = t.type === 'income';
             const li = document.createElement('li');
             li.className = 'tx-item';
-            // 點擊項目長按或點擊可刪除 (這裡簡單做成點擊刪除按鈕)
+            li.onclick = () => { if(t.note) alert('備註：' + t.note); };
             li.innerHTML = `
-                <div class="tx-left" onclick="alert('${t.note || "無備註"}')">
+                <div class="tx-left">
                     <div class="tx-cat">${t.category}</div>
                     <div class="tx-date">${t.date} ${t.note ? '• 📝' : ''}</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <div class="tx-amount ${isInc ? 'income' : 'expense'}">
-                        ${isInc?'+':'-'}${t.amount.toLocaleString()}
-                    </div>
-                    <button style="border:none; background:none; color:#ccc; font-size:1.2rem;" onclick="deleteTx(${t.id})">×</button>
+                    <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc?'+':'-'}${t.amount.toLocaleString()}</div>
+                    <button style="border:none; background:none; color:#ccc; font-size:1.2rem; cursor:pointer;" onclick="event.stopPropagation(); deleteTx(${t.id})">×</button>
                 </div>
             `;
             list.appendChild(li);
         });
     }
 
-    // === 5. 報表與資料備份 ===
-
+    // === 5. 報表與工具 ===
     function generateReport() {
-        const tbody = document.getElementById('reportBody');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById('reportBody'); tbody.innerHTML = '';
         const stats = {};
-        
-        // 初始化近 12 個月
-        const d = new Date();
-        d.setDate(1);
+        const d = new Date(); d.setDate(1);
         const months = [];
         for(let i=0; i<12; i++) {
             const m = d.toISOString().slice(0, 7);
-            stats[m] = { inc: 0, exp: 0 };
-            months.push(m);
+            stats[m] = { inc: 0, exp: 0 }; months.push(m);
             d.setMonth(d.getMonth() - 1);
         }
-
         transactions.forEach(t => {
             const m = t.date.slice(0, 7);
             if (stats[m]) {
-                if (t.type === 'income') stats[m].inc += t.amount;
-                else stats[m].exp += t.amount;
+                if (t.type === 'income') stats[m].inc += t.amount; else stats[m].exp += t.amount;
             }
         });
-
         months.forEach(m => {
             const data = stats[m];
-            const net = data.inc - data.exp;
-            if (data.inc === 0 && data.exp === 0) return; // 沒資料的月份不顯示，讓版面乾淨點
-
-            tbody.innerHTML += `
-                <tr>
-                    <td>${m}</td>
-                    <td style="color:var(--accent-green)">${data.inc > 0 ? data.inc.toLocaleString() : '-'}</td>
-                    <td style="color:var(--accent-red)">${data.exp > 0 ? data.exp.toLocaleString() : '-'}</td>
-                    <td style="font-weight:bold; color:${net>=0?'var(--text-main)':'var(--accent-red)'}">${net.toLocaleString()}</td>
-                </tr>
-            `;
+            if (data.inc === 0 && data.exp === 0) return;
+            tbody.innerHTML += `<tr><td>${m}</td><td style="color:var(--accent-green)">${data.inc.toLocaleString()}</td><td style="color:var(--accent-red)">${data.exp.toLocaleString()}</td><td>${(data.inc-data.exp).toLocaleString()}</td></tr>`;
         });
-        
-        if(tbody.innerHTML === '') {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">尚無年度資料</td></tr>';
-        }
+        if(tbody.innerHTML === '') tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">尚無年度資料</td></tr>';
     }
 
     function exportData() {
-        const dataStr = JSON.stringify(transactions);
-        const blob = new Blob([dataStr], {type: "application/json"});
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `小資暖心記帳備份_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(transactions, null, 2)], {type: "application/json"}));
+        a.download = `小資日記備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
     }
-
+    
     function importData(input) {
-        const file = input.files[0];
-        if(!file) return;
+        const file = input.files[0]; if(!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                if(Array.isArray(data)) {
-                    if(confirm("確定要匯入嗎？這將覆蓋現有資料。")) {
-                        transactions = data;
-                        saveToLocal();
-                        refreshUI();
-                        alert("匯入成功！");
-                        closeModal('reportModal');
-                    }
+                if(Array.isArray(data) && confirm("⚠️ 確定匯入？將覆蓋目前資料。")) {
+                    transactions = data; saveToLocal(); refreshUI(); alert("✅ 匯入成功！");
+                    if(document.getElementById('reportModal').classList.contains('active')) generateReport();
                 }
-            } catch(err) { alert("檔案格式錯誤"); }
+            } catch(err) { alert("❌ 格式錯誤"); }
         };
-        reader.readAsText(file);
-        input.value = '';
+        reader.readAsText(file); input.value = '';
     }
 
     function clearData() {
-        if(confirm("😱 確定要清空所有資料嗎？此動作無法復原！")) {
-            transactions = [];
-            saveToLocal();
-            refreshUI();
-            closeModal('reportModal');
-        }
+        if(confirm("😱 確定清空？資料將無法復原！")) { transactions = []; saveToLocal(); refreshUI(); closeModal('reportModal'); }
     }
 </script>
 
