@@ -17,6 +17,7 @@
             --accent-green: #8DA399;
             --accent-red: #E07A5F;
             --accent-warn: #E9C46A;
+            --accent-excel: #217346; /* Excel 綠 */
             --text-main: #4A4A4A;
             --text-light: #8D8D8D;
             --radius: 16px;
@@ -228,13 +229,9 @@
 <header>
     <div class="brand">🌱 小資日記</div>
     <div class="header-actions">
-        <!-- 刷新按鈕 (NEW) -->
         <button class="btn-icon-link" onclick="window.location.reload()" title="重新整理">🔄</button>
-        <!-- 設定按鈕 -->
         <button class="btn-icon-link" onclick="openModal('settingsModal')" title="設定">⚙️</button>
-        <!-- 說明按鈕 -->
         <button class="btn-icon-link" onclick="openModal('infoModal')" title="說明與教學">ℹ️</button>
-        <!-- 作者按鈕 -->
         <a href="https://vocus.cc/user/@WUCJ" target="_blank" class="btn-author-highlight" title="前往作者部落格">
             <span>✨</span> 逛逛作者部落格
         </a>
@@ -396,18 +393,14 @@
         
         <div class="tools-grid no-print">
             <button class="tool-btn" onclick="exportData()"><span>📥</span> 匯出備份</button>
+            <!-- NEW: Excel 匯出按鈕 -->
+            <button class="tool-btn" onclick="exportToExcel()" style="color:var(--accent-excel);"><span>📊</span> 匯出 Excel</button>
+            
             <button class="tool-btn" onclick="document.getElementById('importFile').click()"><span>📤</span> 匯入資料</button>
             <button class="tool-btn" onclick="window.print()"><span>🖨️</span> 列印報表</button>
             
-            <!-- 新增：單月清空 -->
-            <button class="tool-btn" onclick="clearCurrentMonth()" style="color:var(--accent-warn);">
-                <span>🧹</span> 清空本月
-            </button>
-            
-            <!-- 原有：全部重置 (跨兩欄) -->
-            <button class="tool-btn" onclick="clearAllData()" style="color:var(--accent-red); grid-column: span 2;">
-                <span>🧨</span> 全部重置 (清空所有資料)
-            </button>
+            <button class="tool-btn" onclick="clearCurrentMonth()" style="color:var(--accent-warn);"><span>🧹</span> 清空本月</button>
+            <button class="tool-btn" onclick="clearAllData()" style="color:var(--accent-red);"><span>🧨</span> 全部重置</button>
         </div>
         <input type="file" id="importFile" style="display:none" onchange="importData(this)">
         
@@ -432,7 +425,7 @@
                 <p><span class="info-badge">月份</span>上方可切換不同月份查看帳本。</p>
                 <p><span class="info-badge">預算</span>點擊右上角「⚙️ 設定」可設定每月預算上限，進度條超過80%會變色提醒。</p>
                 <p><span class="info-badge">分類</span>在設定中可新增或刪除自己喜歡的分類。</p>
-                <p><span class="info-badge">清空</span>管理報表內可選擇「清空本月」或「全部重置」。</p>
+                <p><span class="info-badge">Excel</span>在「管理與報表」可將資料匯出成 Excel (CSV) 檔。</p>
             </div>
         </details>
         <button class="btn-block btn-close" onclick="closeModal('infoModal')">了解，關閉</button>
@@ -577,7 +570,6 @@
             localStorage.setItem('cozySettings', JSON.stringify(settings));
             input.value = '';
             renderCategorySettings();
-            // 如果當前記帳視窗開著，也即時更新選單
             if(document.getElementById('inputModal').classList.contains('active')) {
                 setType(document.getElementById('txType').value);
             }
@@ -612,12 +604,10 @@
             }
         });
 
-        // 更新數字
         document.getElementById('displayIncome').innerText = `$${inc.toLocaleString()}`;
         document.getElementById('displayExpense').innerText = `$${exp.toLocaleString()}`;
         document.getElementById('displayBalance').innerText = `$${(inc - exp).toLocaleString()}`;
 
-        // 更新條狀圖 (Visual Bar)
         const budget = settings.budget;
         const bar = document.getElementById('expenseBar');
         const barLabel = document.getElementById('barLabel');
@@ -628,12 +618,10 @@
         let isBudgetMode = budget > 0;
 
         if (isBudgetMode) {
-            // 有預算模式
             percentage = Math.min((exp / budget) * 100, 100);
             barLabel.innerText = '預算使用率';
             budgetStatusText.innerText = `(預算剩餘 $${(budget - exp).toLocaleString()})`;
         } else {
-            // 無預算模式 (使用支出/收入比)
             const total = inc > 0 ? inc : (exp > 0 ? exp : 1);
             percentage = Math.min((exp / total) * 100, 100);
             barLabel.innerText = '支出佔收入比';
@@ -643,16 +631,14 @@
         bar.style.width = percentage + '%';
         barPercent.innerText = Math.round(percentage) + '%';
         
-        // 顏色邏輯
         if (percentage >= 100 && isBudgetMode) {
-            bar.style.backgroundColor = 'var(--accent-red)'; // 爆預算 (紅)
+            bar.style.backgroundColor = 'var(--accent-red)';
         } else if (percentage >= 80) {
-            bar.style.backgroundColor = isBudgetMode ? 'var(--accent-red)' : 'var(--accent-warn)'; // 警戒 (橘/紅)
+            bar.style.backgroundColor = isBudgetMode ? 'var(--accent-red)' : 'var(--accent-warn)';
         } else {
-            bar.style.backgroundColor = '#fff'; // 正常 (白)
+            bar.style.backgroundColor = '#fff';
         }
 
-        // 更新列表
         const list = document.getElementById('txList');
         list.innerHTML = '';
         if (filteredList.length === 0) {
@@ -708,13 +694,35 @@
     }
 
     function exportData() {
-        const data = {
-            transactions: transactions,
-            settings: settings
-        };
+        const data = { transactions: transactions, settings: settings };
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: "application/json"}));
         a.download = `小資日記備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
+    }
+
+    // NEW: Export to Excel (CSV)
+    function exportToExcel() {
+        if (transactions.length === 0) { alert("目前沒有資料可以匯出喔！"); return; }
+        
+        // 1. BOM for UTF-8 in Excel
+        let csvContent = "\uFEFF"; 
+        csvContent += "日期,類型,分類,金額,備註\n";
+
+        // 2. Data rows
+        transactions.forEach(t => {
+            const note = t.note ? `"${t.note.replace(/"/g, '""')}"` : ""; // Escape quotes
+            const typeStr = t.type === 'income' ? '收入' : '支出';
+            csvContent += `${t.date},${typeStr},${t.category},${t.amount},${note}\n`;
+        });
+
+        // 3. Download
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `小資日記_Excel匯出_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
     }
     
     function importData(input) {
@@ -724,17 +732,11 @@
             try {
                 const data = JSON.parse(e.target.result);
                 if(Array.isArray(data)) {
-                    if(confirm("⚠️ 檢測到舊版備份，確定匯入？")) {
-                        transactions = data; 
-                        saveToLocal(); refreshUI(); alert("✅ 匯入成功！");
-                    }
+                    if(confirm("⚠️ 檢測到舊版備份，確定匯入？")) { transactions = data; saveToLocal(); refreshUI(); alert("✅ 匯入成功！"); }
                 } else if (data.transactions) {
                     if(confirm("⚠️ 確定匯入？這將覆蓋目前的帳本與設定。")) {
                         transactions = data.transactions;
-                        if(data.settings) {
-                            settings = data.settings;
-                            localStorage.setItem('cozySettings', JSON.stringify(settings));
-                        }
+                        if(data.settings) { settings = data.settings; localStorage.setItem('cozySettings', JSON.stringify(settings)); }
                         saveToLocal(); refreshUI(); alert("✅ 匯入成功！");
                     }
                 }
@@ -744,31 +746,20 @@
         reader.readAsText(file); input.value = '';
     }
 
-    // 清空當月
     function clearCurrentMonth() {
         const selectedMonth = document.getElementById('currentMonthPicker').value;
         if (!selectedMonth) return;
-
         if (confirm(`確定要清空「${selectedMonth}」的所有記帳紀錄嗎？\n此動作無法復原！`)) {
-            // 過濾掉該月份的資料 (保留其他月份)
             transactions = transactions.filter(t => !t.date.startsWith(selectedMonth));
-            saveToLocal();
-            refreshUI();
-            
-            // 如果報表開著，也重新產生
+            saveToLocal(); refreshUI();
             if(document.getElementById('reportModal').classList.contains('active')) generateReport();
-            
             alert(`${selectedMonth} 資料已清空`);
         }
     }
 
-    // 全部重置
     function clearAllData() {
         if(confirm("😱 嚴重警告：確定要清空「所有」資料嗎？\n所有月份的紀錄將會消失且無法復原！")) { 
-            transactions = []; 
-            saveToLocal(); 
-            refreshUI(); 
-            closeModal('reportModal'); 
+            transactions = []; saveToLocal(); refreshUI(); closeModal('reportModal'); 
         }
     }
 </script>
