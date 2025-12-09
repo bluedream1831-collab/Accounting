@@ -396,7 +396,16 @@
             <button class="tool-btn" onclick="exportData()"><span>📥</span> 匯出備份</button>
             <button class="tool-btn" onclick="document.getElementById('importFile').click()"><span>📤</span> 匯入資料</button>
             <button class="tool-btn" onclick="window.print()"><span>🖨️</span> 列印報表</button>
-            <button class="tool-btn" style="color:var(--accent-red);" onclick="clearData()"><span>🗑️</span> 清空重置</button>
+            
+            <!-- 新增：單月清空 -->
+            <button class="tool-btn" onclick="clearCurrentMonth()" style="color:var(--accent-warn);">
+                <span>🧹</span> 清空本月
+            </button>
+            
+            <!-- 原有：全部重置 (跨兩欄) -->
+            <button class="tool-btn" onclick="clearAllData()" style="color:var(--accent-red); grid-column: span 2;">
+                <span>🧨</span> 全部重置 (清空所有資料)
+            </button>
         </div>
         <input type="file" id="importFile" style="display:none" onchange="importData(this)">
         
@@ -421,6 +430,7 @@
                 <p><span class="info-badge">月份</span>上方可切換不同月份查看帳本。</p>
                 <p><span class="info-badge">預算</span>點擊右上角「⚙️ 設定」可設定每月預算上限，進度條超過80%會變色提醒。</p>
                 <p><span class="info-badge">分類</span>在設定中可新增或刪除自己喜歡的分類。</p>
+                <p><span class="info-badge">清空</span>管理報表內可選擇「清空本月」或「全部重置」。</p>
             </div>
         </details>
         <button class="btn-block btn-close" onclick="closeModal('infoModal')">了解，關閉</button>
@@ -711,7 +721,6 @@
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                // 相容舊版 (只有 transactions 陣列) 與 新版 (包含 settings 物件)
                 if(Array.isArray(data)) {
                     if(confirm("⚠️ 檢測到舊版備份，確定匯入？")) {
                         transactions = data; 
@@ -733,8 +742,32 @@
         reader.readAsText(file); input.value = '';
     }
 
-    function clearData() {
-        if(confirm("😱 確定清空？資料將無法復原！")) { transactions = []; saveToLocal(); refreshUI(); closeModal('reportModal'); }
+    // 清空當月
+    function clearCurrentMonth() {
+        const selectedMonth = document.getElementById('currentMonthPicker').value;
+        if (!selectedMonth) return;
+
+        if (confirm(`確定要清空「${selectedMonth}」的所有記帳紀錄嗎？\n此動作無法復原！`)) {
+            // 過濾掉該月份的資料 (保留其他月份)
+            transactions = transactions.filter(t => !t.date.startsWith(selectedMonth));
+            saveToLocal();
+            refreshUI();
+            
+            // 如果報表開著，也重新產生
+            if(document.getElementById('reportModal').classList.contains('active')) generateReport();
+            
+            alert(`${selectedMonth} 資料已清空`);
+        }
+    }
+
+    // 全部重置
+    function clearAllData() {
+        if(confirm("😱 嚴重警告：確定要清空「所有」資料嗎？\n所有月份的紀錄將會消失且無法復原！")) { 
+            transactions = []; 
+            saveToLocal(); 
+            refreshUI(); 
+            closeModal('reportModal'); 
+        }
     }
 </script>
 
